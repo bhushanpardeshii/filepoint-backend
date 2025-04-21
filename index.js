@@ -18,7 +18,7 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 
 // Protected routes
-app.use("/recharge", validateApiKey, rechargeRoutes);
+
 app.use("/", validateApiKey, checkCredits, crudRoutes);
 
 const PORT = process.env.PORT || 3000;
