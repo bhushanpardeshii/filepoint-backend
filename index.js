@@ -17,8 +17,8 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 
 // Protected routes
-app.use("/recharge", validateApiKey, rechargeRoutes);
-app.use("/crud", validateApiKey, crudRoutes);  // checkCredits is now handled in crud.js
+app.use("/", validateApiKey, rechargeRoutes);
+app.use("/", validateApiKey, crudRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
