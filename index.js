@@ -16,7 +16,7 @@ app.use(express.json());
 
 // Public routes
 app.use("/auth", authRoutes);
-
+app.use("/recharge", rechargeRoutes);
 // Protected routes
 
 app.use("/", validateApiKey, checkCredits, crudRoutes);
