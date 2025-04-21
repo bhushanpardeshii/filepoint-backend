@@ -4,10 +4,8 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const checkCredits = require("../middleware/checkCredits");
 
-// Apply credit check to all routes
-router.use(checkCredits);
-
-router.post("/create", async (req, res) => {
+// Only apply credit check to create route
+router.post("/create", checkCredits, async (req, res) => {
     const { value, txHash } = req.body;
     if (value == null || !txHash) return res.status(400).json({ error: "Invalid input" });
 

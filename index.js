@@ -6,7 +6,6 @@ const authRoutes = require("./routes/auth");
 const crudRoutes = require("./routes/crud");
 const rechargeRoutes = require("./routes/recharge");
 const { validateApiKey } = require("./middleware/validateKey");
-const checkCredits = require("./middleware/checkCredits");
 
 dotenv.config();
 const prisma = new PrismaClient();
@@ -16,10 +15,10 @@ app.use(express.json());
 
 // Public routes
 app.use("/auth", authRoutes);
-app.use("/recharge", rechargeRoutes);
-// Protected routes
 
-app.use("/", validateApiKey, checkCredits, crudRoutes);
+// Protected routes
+app.use("/recharge", validateApiKey, rechargeRoutes);
+app.use("/crud", validateApiKey, crudRoutes);  // checkCredits is now handled in crud.js
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
