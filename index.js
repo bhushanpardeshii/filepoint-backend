@@ -5,7 +5,7 @@ const { PrismaClient } = require("@prisma/client");
 const authRoutes = require("./routes/auth");
 const crudRoutes = require("./routes/crud");
 const rechargeRoutes = require("./routes/recharge");
-const validateApiKey = require("./middleware/validateKey");
+const { validateApiKey } = require("./middleware/validateKey");
 const checkCredits = require("./middleware/checkCredits");
 
 dotenv.config();
