@@ -14,10 +14,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Public routes
 app.use("/auth", authRoutes);
-app.use("/recharge", rechargeRoutes);
 
-// CRUD routes (protected)
+// Protected routes
+app.use("/recharge", validateApiKey, rechargeRoutes);
 app.use("/", validateApiKey, checkCredits, crudRoutes);
 
 const PORT = process.env.PORT || 3000;

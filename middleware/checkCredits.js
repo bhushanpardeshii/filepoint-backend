@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
-const checkCredits = async (req, res, next) => {
+module.exports = async (req, res, next) => {
     try {
         const user = await prisma.user.findUnique({ where: { id: req.user.id } });
 
@@ -26,6 +26,4 @@ const checkCredits = async (req, res, next) => {
         console.error("Error in checkCredits middleware:", error);
         res.status(500).json({ error: "Internal server error" });
     }
-};
-
-module.exports = checkCredits; 
+}; 
