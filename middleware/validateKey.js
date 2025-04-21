@@ -10,13 +10,5 @@ async function validateApiKey(req, res, next) {
     next();
 }
 
-async function checkCredits(req, res, next) {
-    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
-    if (user.credits <= 0) {
-        return res.status(403).json({ error: "Request limit exceeded. Please recharge credits." });
-    }
-    await prisma.user.update({ where: { id: user.id }, data: { credits: { decrement: 1 } } });
-    next();
-}
 
-module.exports = { validateApiKey, checkCredits };
+module.exports = { validateApiKey };
