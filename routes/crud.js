@@ -2,10 +2,15 @@ const express = require("express");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const checkCredits = require("../middleware/checkCredits");
+
+// Apply credit check to all routes
+router.use(checkCredits);
 
 router.post("/create", async (req, res) => {
     const { value, txHash } = req.body;
     if (value == null || !txHash) return res.status(400).json({ error: "Invalid input" });
+
     const todo = await prisma.todo.create({ data: { value, txHash, userId: req.user.id } });
     res.json({ id: todo.id, status: "created successfully" });
 });

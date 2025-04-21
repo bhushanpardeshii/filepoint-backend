@@ -13,7 +13,7 @@ router.post("/google", async (req, res) => {
         const apiKey = crypto.randomBytes(16).toString("hex");
         user = await prisma.user.create({ data: { email, apiKey } });
     }
-    res.json({ apiKey: user.apiKey, apiUrl: process.env.API_URL, credits: user.credits });
+    res.json({ apiUrl: process.env.API_URL, credits: user.credits });
 });
 
 module.exports = router;
