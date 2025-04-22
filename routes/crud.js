@@ -15,15 +15,21 @@ router.post("/create", checkCredits, async (req, res) => {
             return res.status(400).json({ error: "Value and txHash are required" });
         }
 
+        // Convert value to number
+        const numericValue = parseFloat(value);
+        if (isNaN(numericValue)) {
+            return res.status(400).json({ error: "Value must be a number" });
+        }
+
         // Check if user is attached to request
         if (!req.user || !req.user.id) {
             return res.status(401).json({ error: "User not authenticated" });
         }
 
-        // Create todo
+        // Create todo with numeric value
         const todo = await prisma.todo.create({
             data: {
-                value: value.toString(),
+                value: numericValue,
                 txHash,
                 userId: req.user.id
             }
@@ -47,9 +53,15 @@ router.patch("/update/:id", validateApiKey, async (req, res) => {
         const { value } = req.body;
         if (value == null) return res.status(400).json({ error: "Value required" });
 
+        // Convert value to number
+        const numericValue = parseFloat(value);
+        if (isNaN(numericValue)) {
+            return res.status(400).json({ error: "Value must be a number" });
+        }
+
         const todo = await prisma.todo.updateMany({
             where: { id: req.params.id, userId: req.user.id },
-            data: { value: value.toString() },
+            data: { value: numericValue },
         });
         if (todo.count === 0) return res.status(404).json({ error: "Not found or unauthorized" });
         res.json({ status: "updated successfully" });
