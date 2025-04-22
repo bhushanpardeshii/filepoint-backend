@@ -42,10 +42,24 @@ router.post("/create", checkCredits, async (req, res) => {
     }
 });
 
-router.get("/get/:id", async (req, res) => {
-    const todo = await prisma.todo.findFirst({ where: { id: req.params.id, userId: req.user.id } });
-    if (!todo) return res.status(404).json({ error: "Not found" });
-    res.json({ value: todo.value, txHash: todo.txHash });
+router.get("/get/:id", validateApiKey, async (req, res) => {
+    try {
+        const todo = await prisma.todo.findFirst({
+            where: {
+                id: req.params.id,
+                userId: req.user.id
+            }
+        });
+        if (!todo) return res.status(404).json({ error: "Not found" });
+        res.json({
+            id: todo.id,
+            value: todo.value,
+            txHash: todo.txHash
+        });
+    } catch (error) {
+        console.error("Get todo error:", error);
+        res.status(500).json({ error: "Failed to get todo" });
+    }
 });
 
 router.patch("/update/:id", validateApiKey, async (req, res) => {
