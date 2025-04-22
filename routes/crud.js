@@ -3,6 +3,7 @@ const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const checkCredits = require("../middleware/checkCredits");
+const { validateApiKey } = require("../middleware/validateKey");
 
 // Only apply credit check to create route
 router.post("/create", checkCredits, async (req, res) => {
@@ -14,12 +15,6 @@ router.post("/create", checkCredits, async (req, res) => {
             return res.status(400).json({ error: "Value and txHash are required" });
         }
 
-        // Convert value to number
-        const numericValue = parseFloat(value);
-        if (isNaN(numericValue)) {
-            return res.status(400).json({ error: "Value must be a number" });
-        }
-
         // Check if user is attached to request
         if (!req.user || !req.user.id) {
             return res.status(401).json({ error: "User not authenticated" });
@@ -28,7 +23,7 @@ router.post("/create", checkCredits, async (req, res) => {
         // Create todo
         const todo = await prisma.todo.create({
             data: {
-                value: numericValue,
+                value: value.toString(),
                 txHash,
                 userId: req.user.id
             }
@@ -47,15 +42,21 @@ router.get("/get/:id", async (req, res) => {
     res.json({ value: todo.value, txHash: todo.txHash });
 });
 
-router.patch("/update/:id", async (req, res) => {
-    const { value } = req.body;
-    if (value == null) return res.status(400).json({ error: "Value required" });
-    const todo = await prisma.todo.updateMany({
-        where: { id: req.params.id, userId: req.user.id },
-        data: { value },
-    });
-    if (todo.count === 0) return res.status(404).json({ error: "Not found or unauthorized" });
-    res.json({ status: "updated successfully" });
+router.patch("/update/:id", validateApiKey, async (req, res) => {
+    try {
+        const { value } = req.body;
+        if (value == null) return res.status(400).json({ error: "Value required" });
+
+        const todo = await prisma.todo.updateMany({
+            where: { id: req.params.id, userId: req.user.id },
+            data: { value: value.toString() },
+        });
+        if (todo.count === 0) return res.status(404).json({ error: "Not found or unauthorized" });
+        res.json({ status: "updated successfully" });
+    } catch (error) {
+        console.error("Update todo error:", error);
+        res.status(500).json({ error: "Failed to update todo" });
+    }
 });
 
 router.delete("/delete/:id", async (req, res) => {

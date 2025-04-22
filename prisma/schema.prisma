@@ -24,7 +24,7 @@ model User {
 
 model Todo {
   id     String @id @default(uuid())
-  value  Float
+  value  String
   txHash String
   user   User   @relation(fields: [userId], references: [id])
   userId String
